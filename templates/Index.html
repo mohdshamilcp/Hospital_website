@@ -1,0 +1,369 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hospital services, appointments, patient information, and contact details.">
+  <title>CarePoint Hospital | Patient Care</title>
+
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body { margin: 0; font: 16px/1.6 Arial, Helvetica, sans-serif; color: #263746; }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: auto; }
+    .topbar { background: #143a52; color: white; font-size: .9rem; }
+    .topbar .wrap { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; }
+    header { position: sticky; top: 0; z-index: 5; background: #fff; box-shadow: 0 2px 14px #143a5212; }
+    .nav { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { font-size: 1.25rem; font-weight: 800; color: #143a52; }
+    .brand b { color: #087e8b; }
+    .links { display: flex; align-items: center; gap: 21px; font-size: .94rem; font-weight: 700; }
+    .links a:hover { color: #087e8b; }
+    .menu { display: none; border: 0; background: none; font-size: 1.6rem; color: #143a52; }
+    .btn { display: inline-block; border: 0; border-radius: 8px; padding: 11px 17px; background: #087e8b; color: white; font-weight: 700; cursor: pointer; }
+    .btn:hover { background: #066773; }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 8%;
+      color: white;
+      background:
+        linear-gradient(rgba(20, 35, 25, 0.48), rgba(20, 35, 25, 0.48)),
+        url("{% static 'hospital/images/background.jpg' %}") center / cover no-repeat;
+    }
+
+    .hero-content { position: relative; z-index: 1; padding: 72px 0; max-width: 700px; }
+    .tag { font-size: .78rem; letter-spacing: .13em; text-transform: uppercase; font-weight: 800; color: #b8f0e7; }
+    h1 { font-size: clamp(2.5rem, 5vw, 4.2rem); line-height: 1.08; margin: 12px 0; }
+    .hero p { font-size: 1.12rem; max-width: 570px; color: #e5eff2; }
+    .hero .btn { background: #fff; color: #143a52; }
+    .urgent { background: #fff8e7; border-bottom: 1px solid #f0dfb3; }
+    .urgent .wrap { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 0; }
+    .urgent strong { color: #704700; }
+    .urgent a { text-decoration: underline; font-weight: 700; }
+    section { padding: 68px 0; }
+    .soft { background: #f6fafb; }
+    .heading { text-align: center; max-width: 690px; margin: 0 auto 32px; }
+    .heading .tag { color: #087e8b; }
+    h2 { font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.2; color: #143a52; margin: 8px 0; }
+    .heading p, .muted { color: #61717d; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card { background: #fff; border: 1px solid #e1eaed; border-radius: 13px; padding: 23px; box-shadow: 0 7px 20px #143a5208; }
+    .card h3 { color: #143a52; margin: 0 0 7px; }
+    .card p { color: #61717d; margin: 0; }
+    .icon { color: #087e8b; font-size: 1.4rem; margin-bottom: 8px; }
+    .doctors .card { border-top: 4px solid #087e8b; }
+    .credential { font-size: .9rem; color: #61717d; }
+    .patient-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .patient-grid .card { display: flex; gap: 15px; }
+    .patient-grid .icon { flex: 0 0 30px; }
+    .location-grid, .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+    .box { background: #e8f5f3; padding: 26px; border-radius: 14px; }
+    .box h3 { margin-top: 0; color: #143a52; }
+    .hours { width: 100%; border-collapse: collapse; }
+    .hours th, .hours td { text-align: left; padding: 8px; border-bottom: 1px solid #cbdedc; }
+    form { display: grid; gap: 13px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    label { display: grid; gap: 5px; font-weight: 700; color: #143a52; }
+    input, select, textarea { width: 100%; padding: 11px; border: 1px solid #bdcbd0; border-radius: 7px; font: inherit; }
+    input:focus, select:focus, textarea:focus { outline: 3px solid #087e8b35; border-color: #087e8b; }
+    textarea { min-height: 90px; resize: vertical; }
+    .note { font-size: .86rem; color: #61717d; }
+    .review-form { max-width: 760px; margin: 28px auto 0; background: #fff; border: 1px solid #e1eaed; border-radius: 13px; padding: 24px; box-shadow: 0 7px 20px #143a5208; }
+    .review-list { margin-bottom: 24px; }
+    .review-stars { color: #d49a2e; letter-spacing: 3px; font-size: 1.35rem; }
+    .star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; width: max-content; gap: 4px; }
+    .star-rating input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .star-rating label { display: block; color: #bdcbd0; font-size: 2rem; cursor: pointer; line-height: 1; }
+    .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: #d49a2e; }
+    .star-rating input:focus-visible + label { outline: 2px solid #087e8b; outline-offset: 2px; }
+    footer { background: #102e42; color: #d5e3e8; padding: 25px 0; font-size: .9rem; }
+    .foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .foot a { text-decoration: underline; }
+
+    @media (max-width: 800px) {
+      .menu { display: block; }
+      .links { display: none; position: absolute; top: 72px; left: 0; right: 0; padding: 20px; background: #fff; box-shadow: 0 10px 14px #143a5212; flex-direction: column; align-items: flex-start; }
+      .links.open { display: flex; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      .hero { min-height: 450px; }
+      .urgent .wrap { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 560px) {
+      .grid, .patient-grid, .location-grid, .about-grid, .form-grid { grid-template-columns: 1fr; }
+      .hero { min-height: 430px; }
+      .hero-content { padding: 54px 0; }
+      section { padding: 52px 0; }
+      .topbar .wrap { justify-content: center; text-align: center; }
+      .topbar span:last-child { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="wrap">
+      <span></span>
+      <span>Open 24/7</span>
+    </div>
+  </div>
+
+  <header>
+    <nav class="wrap nav" aria-label="Main navigation">
+      <a class="brand" href="#home">CarePoint <b>Hospital</b></a>
+      <div class="links" id="navLinks">
+        <a href="#services">Services</a>
+        <a href="#doctors">Doctors</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#patients">Patient Info</a>
+        <a href="#location">Location &amp; Hours</a>
+        <a href="#contact">Contact</a>
+        <a class="btn" href="#appointment">Request Appointment</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="wrap hero-content">
+        <div class="tag">Here for your health</div>
+        <h1>Care that puts you first.</h1>
+        <p>Find the care, information, and support you need for yourself and your family.</p>
+        <a class="btn" href="#appointment">Request an appointment</a>
+      </div>
+    </section>
+
+    <div class="urgent">
+      <div class="wrap">
+        <strong>Emergency? Call +91 2309 874</strong>
+      </div>
+    </div>
+
+    <section class="soft" id="services">
+      <div class="wrap">
+        <div class="heading">
+          <div class="tag">Care and treatment</div>
+          <h2>Services and departments</h2>
+          <p>-</p>
+        </div>
+
+        <div class="grid">
+          <article class="card"><div class="icon" aria-hidden="true">🚑</div><h3>Emergency Care</h3><p>Emergency department information and instructions for urgent care.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">🩺</div><h3>General Medicine</h3><p>Routine checkups, preventive care, and support for common health concerns.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">🫀</div><h3>Cardiology</h3><p>Heart health consultations, assessments, and ongoing care.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">👶</div><h3>Pediatrics</h3><p>Healthcare for infants, children, and young people.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">🦴</div><h3>Orthopedics</h3><p>Care for bone, joint, muscle, and movement-related conditions.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">🧠</div><h3>Neurology</h3><p>Care for conditions affecting the brain, spinal cord, and nervous system.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">🧪</div><h3>Diagnostics</h3><p>Laboratory testing and medical imaging to support diagnosis and treatment.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">💊</div><h3>Pharmacy</h3><p>Prescription medicines and guidance on their safe use.</p></article>
+          <article class="card"><div class="icon" aria-hidden="true">🩹</div><h3>Outpatient Services</h3><p>Medical consultations, checkups, and treatments that do not require an overnight stay.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="doctors" id="doctors">
+      <div class="wrap">
+        <div class="heading">
+          <div class="tag">Meet your care team</div>
+          <h2>Doctors and specialists</h2>
+          <p>-</p>
+        </div>
+
+        <div class="grid">
+          <article class="card"><h3>Dr. Arjun Das</h3><div class="credential">MBBS, MD (General Medicine)</div><p>Monday–Saturday</p><p>8:30 AM–12:30 PM</p></article>
+          <article class="card"><h3>Dr. Leena George</h3><div class="credential">MBBS, DNB (General Medicine)</div><p>Monday–Friday</p><p>4:00–7:00 PM</p></article>
+          <article class="card"><h3>Dr. Asha Menon</h3><div class="credential">MBBS, MD (Cardiology)</div><p>Monday–Saturday</p><p>9:00 AM–1:00 PM</p></article>
+          <article class="card"><h3>Dr. Vivek Kumar</h3><div class="credential">MBBS, DM (Cardiology)</div><p>Monday–Friday</p><p>4:00–7:00 PM</p></article>
+          <article class="card"><h3>Dr. Rahul Nair</h3><div class="credential">MBBS, MD (Pediatrics)</div><p>Monday–Saturday</p><p>10:00 AM–1:00 PM</p></article>
+          <article class="card"><h3>Dr. Divya Raj</h3><div class="credential">MBBS, DCH (Pediatrics)</div><p>Monday, Wednesday, and Friday</p><p>3:00–6:00 PM</p></article>
+          <article class="card"><h3>Dr. Meera Thomas</h3><div class="credential">MBBS, MS (Orthopedics)</div><p>Monday–Saturday</p><p>9:30 AM–12:30 PM</p></article>
+          <article class="card"><h3>Dr. Nikhil Varma</h3><div class="credential">MBBS, MS (Orthopedics)</div><p>Monday–Friday</p><p>2:00–5:00 PM</p></article>
+          <article class="card"><h3>Dr. Sana Khan</h3><div class="credential">MBBS, MD, DM (Neurology)</div><p>Tuesday, Thursday, and Saturday</p><p>10:00 AM–1:00 PM</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="soft" id="reviews">
+      <div class="wrap">
+        <div class="heading">
+          <div class="tag">Patient feedback</div>
+          <h2>Hospital Reviews and Ratings</h2>
+          <p>Share a rating and review about the hospital, a department, or a doctor.</p>
+        </div>
+
+        <form class="review-form" id="reviewForm" method="post" action="{% url 'index' %}">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="review">
+
+          <div class="form-grid">
+            <label>Your name
+              <input type="text" name="reviewer_name" autocomplete="name" required>
+            </label>
+          </div>
+
+          <div>
+            <label>Your rating</label>
+            <div class="star-rating" role="radiogroup" aria-label="Choose a rating from one to five stars">
+              <input type="radio" id="reviewStar5" name="rating" value="5" required>
+              <label for="reviewStar5" title="5 stars">★</label>
+
+              <input type="radio" id="reviewStar4" name="rating" value="4">
+              <label for="reviewStar4" title="4 stars">★</label>
+
+              <input type="radio" id="reviewStar3" name="rating" value="3">
+              <label for="reviewStar3" title="3 stars">★</label>
+
+              <input type="radio" id="reviewStar2" name="rating" value="2">
+              <label for="reviewStar2" title="2 stars">★</label>
+
+              <input type="radio" id="reviewStar1" name="rating" value="1">
+              <label for="reviewStar1" title="1 star">★</label>
+            </div>
+          </div>
+
+          <label for="reviewComment">Your review
+            <textarea id="reviewComment" name="comment" placeholder="Share your experience" required></textarea>
+          </label>
+
+          <button class="btn" type="submit">Submit review</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="soft" id="patients">
+      <div class="wrap">
+        <div class="heading">
+          <div class="tag">Plan your visit</div>
+          <h2>Patient information</h2>
+          <p>-</p>
+        </div>
+
+        <div class="patient-grid">
+          <article class="card"><div class="icon" aria-hidden="true">➜</div><div><h3>Admissions</h3><p>Admissions desk hours: Monday–Saturday, 8:00 AM–5:00 PM. Bring a photo ID, doctor referral, previous medical records, and insurance card if applicable.</p></div></article>
+          <article class="card"><div class="icon" aria-hidden="true">♡</div><div><h3>Visitor Information</h3><p>Visiting hours: Daily, 4:00 PM–6:00 PM. Please keep visits brief and follow staff instructions in patient care areas.</p></div></article>
+          <article class="card"><div class="icon" aria-hidden="true">₹</div><div><h3>Billing and Insurance</h3><p>Payment options: cash, debit or credit card, and UPI. Example insurance providers: Star Health and HDFC ERGO. Confirm coverage with the billing desk before treatment.</p></div></article>
+          <article class="card"><div class="icon" aria-hidden="true">▣</div><div><h3>Test Results Information</h3><p>Patients can collect printed laboratory reports from the records desk Monday–Saturday, 9:00 AM–4:00 PM. Bring your appointment slip or patient ID.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="location">
+      <div class="wrap">
+        <div class="heading">
+          <div class="tag">Visit us</div>
+          <h2>Location and opening hours</h2>
+          <p>-</p>
+        </div>
+
+        <div class="location-grid">
+          <div class="box">
+            <h3>CarePoint Hospital</h3>
+            <p>123 Sample Health Avenue<br>Kozhikode, Kerala, 673001</p>
+            <p>Parking: Visitor parking is available on site.<br>The nearest bus stop is a short walk away.</p>
+            <a class="btn" href="https://www.google.com/maps/search/?api=1&amp;query=CarePoint+Hospital+Kozhikode" target="_blank" rel="noopener">Get directions</a>
+          </div>
+
+          <div class="box">
+            <h3>Hours</h3>
+            <table class="hours">
+              <tbody>
+                <tr><th scope="row">Emergency</th><td>Open 24 hours</td></tr>
+                <tr><th scope="row">Outpatient</th><td>Monday–Saturday, 9:00 AM–5:00 PM</td></tr>
+                <tr><th scope="row">Visiting</th><td>Daily, 4:00 PM–6:00 PM</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="soft" id="appointment">
+      <div class="wrap">
+        <div class="heading">
+          <div class="tag">Appointments</div>
+          <h2>Request an appointment</h2>
+        </div>
+
+        <form id="appointmentForm" method="post" action="{% url 'index' %}">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="appointment">
+
+          <div class="form-grid">
+            <label>Full name
+              <input name="patient_name" autocomplete="name" required>
+            </label>
+
+            <label>Phone
+              <input type="tel" name="phone" autocomplete="tel" required>
+            </label>
+          </div>
+
+          <div class="form-grid">
+            <label>Department
+              <select name="department" required>
+                <option value="" disabled selected>Choose a department</option>
+                <option value="general-medicine">General Medicine</option>
+                <option value="cardiology">Cardiology</option>
+                <option value="pediatrics">Pediatrics</option>
+                <option value="orthopedics">Orthopedics</option>
+                <option value="neurology">Neurology</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+
+            <div>
+              <label for="appointment-date">Preferred date</label>
+              <input
+                type="date"
+                id="appointment-date"
+                name="appointment_date"
+                min="{% now 'Y-m-d' %}"
+                required
+              >
+            </div>
+          </div>
+
+          <label>Message (do not include private medical details)
+            <textarea name="message"></textarea>
+          </label>
+
+          <button class="btn" type="submit">Send appointment request</button>
+          <p class="note">For urgent medical needs, call the hospital’s emergency number.</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="wrap about-grid">
+        <div>
+          <div class="tag" style="color:#087e8b">Contact</div>
+          <h2>Get in touch</h2>
+          <p class="muted">
+            Main phone: +91 1234 4321<br>
+            Email: info@carepoint.example<br>
+            Address: 123 Sample Health Avenue, Kozhikode, Kerala, 673001
+          </p>
+          <p><strong>Appointments:</strong> +91 4321 1234</p>
+        </div>
+
+        <div class="box">
+          <h3>Privacy and your information</h3>
+          <p>Please provide your contact details so the hospital can follow up about your appointment request. Do not include private medical information in this form.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <span>© 2026 CAREPOINT HOSPITAL.</span>
+    </div>
+  </footer>
+</body>
+</html>
